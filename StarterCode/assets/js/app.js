@@ -30,24 +30,28 @@ var chartGroup = svg.append("g")
 // Step 3:
 // Import data from the data.csv file
 // =================================
-d3.csv("assets/data/data.csv").then(function (stateData) {
+d3.csv("assets/data/data.csv").then(stateData => {
+    console.log(stateData);
 
     // Step 1: Parse Data/Cast as numbers
     // ==============================
-    stateData.forEach(function (data) {
+    stateData.forEach(data => {
         data.poverty = +data.poverty;
         data.healthcare = +data.healthcare;
     });
 
+
     // Step 2: Create scale functions
     // ==============================
     var xLinearScale = d3.scaleLinear()
-        .domain([20, d3.max(stateData, d => d.poverty)])
+        .domain([8, d3.max(stateData, d => d.poverty)])
         .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
         .domain([0, d3.max(stateData, d => d.healthcare)])
         .range([height, 0]);
+
+
 
     // Step 3: Create axis functions
     // ==============================
@@ -63,6 +67,12 @@ d3.csv("assets/data/data.csv").then(function (stateData) {
     chartGroup.append("g")
         .call(leftAxis);
 
+    chartGroup.append("text")
+        .text("Healthcare Vs Poverty By States")
+        .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+
+
+
     // Step 5: Create Circles
     // ==============================
     var circlesGroup = chartGroup.selectAll("circle")
@@ -71,8 +81,8 @@ d3.csv("assets/data/data.csv").then(function (stateData) {
         .append("circle")
         .attr("cx", d => xLinearScale(d.poverty))
         .attr("cy", d => yLinearScale(d.healthcare))
-        .attr("r", "15")
-        .attr("fill", "red")
+        .attr("r", "10")
+        .attr("fill", "blue")
         .attr("opacity", ".5");
 
     // Step 6: Initialize tool tip
@@ -81,7 +91,7 @@ d3.csv("assets/data/data.csv").then(function (stateData) {
         .attr("class", "tooltip")
         .offset([80, -60])
         .html(function (d) {
-            return (`${d.state}<br>poverty percentage: ${d.poverty}<br>healthcare ratio: ${d.healthcare}`);
+            return (`${d.abbr}<br>poverty percentage: ${d.poverty}<br>healthcare ratio: ${d.healthcare}`);
         });
 
     // Step 7: Create tooltip in the chart
