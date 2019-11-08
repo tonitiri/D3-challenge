@@ -1,8 +1,8 @@
 // @TODO: YOUR CODE HERE!
 // Step 1: Set up our chart
 //= ================================
-var svgWidth = 960;
-var svgHeight = 500;
+var svgWidth = 1000;
+var svgHeight = 700;
 
 var margin = {
     top: 20,
@@ -38,6 +38,8 @@ d3.csv("assets/data/data.csv").then(stateData => {
     stateData.forEach(data => {
         data.poverty = +data.poverty;
         data.healthcare = +data.healthcare;
+        data.abbr = +data.abbr;
+        data.state = +data.state;
     });
 
 
@@ -58,12 +60,16 @@ d3.csv("assets/data/data.csv").then(stateData => {
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
 
+
     // Step 4: Append Axes to the chart
     // ==============================
-    chartGroup.append("g")
+    // append x axis
+    var xAxis = chartGroup.append("g")
+        .classed("x-axis", true)
         .attr("transform", `translate(0, ${height})`)
         .call(bottomAxis);
 
+    // append y axis
     chartGroup.append("g")
         .call(leftAxis);
 
@@ -85,14 +91,26 @@ d3.csv("assets/data/data.csv").then(stateData => {
         .attr("fill", "blue")
         .attr("opacity", ".5");
 
+
+
     // Step 6: Initialize tool tip
     // ==============================
-    var toolTip = d3.tip()
+    // var toolTip = d3.tip()
+    //     .attr("class", "tooltip")
+    //     .offset([80, -60])
+    //     .html(function (d) {
+    //         return (`${data.abbr}<br>poverty percentage: ${data.poverty}<br>healthcare ratio: ${data.healthcare}`);
+    //     });
+
+    var toolTip = d3.select('body')
+        .append('div')
         .attr("class", "tooltip")
         .offset([80, -60])
         .html(function (d) {
-            return (`${d.abbr}<br>poverty percentage: ${d.poverty}<br>healthcare ratio: ${d.healthcare}`);
+            return (`${data.abbr}<br>poverty percentage: ${data.poverty}<br>healthcare ratio: ${data.healthcare}`);
         });
+
+
 
     // Step 7: Create tooltip in the chart
     // ==============================
@@ -103,9 +121,9 @@ d3.csv("assets/data/data.csv").then(stateData => {
     circlesGroup.on("click", function (data) {
         toolTip.show(data, this);
     })
-        // onmouseout event
-        .on("mouseout", function (data, index) {
-            toolTip.hide(data);
+        // onmouseover event
+        .on("mouseover", function (data, index) {
+            toolTip.html(data);
         });
 
     // Create axes labels
@@ -125,10 +143,4 @@ d3.csv("assets/data/data.csv").then(stateData => {
     console.log(error);
 });
 
-// var toolTip = d3.select(“body”)
-//     .append(“div”)
-//     .classed(“tooltip”, true);
 
-// toolTip.on(“mouseout”, function () {
-//     toolTip.style(“display”, “none”);
-// })
