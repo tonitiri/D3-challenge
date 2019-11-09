@@ -74,6 +74,7 @@ d3.csv("assets/data/data.csv").then(stateData => {
         .call(leftAxis);
 
 
+
     // Create axes labels
     chartGroup.append("text")
         .attr("transform", "rotate(-90)")
@@ -100,12 +101,12 @@ d3.csv("assets/data/data.csv").then(stateData => {
         .attr("id", "circleCustomTooltip")
         .attr("cx", d => xLinearScale(d.poverty))
         .attr("cy", d => yLinearScale(d.healthcare))
-        .attr("r", "10")
-        .attr("fill", "black")
-        .attr("opacity", ".5")
+        .attr("r", "15")
+        .attr("fill", "blue")
+        .attr("opacity", ".8")
         .text(function (d) { return d.abbr; })
         .attr("font-family", "sans-serif")
-        .attr("font-size", "5px")
+        .attr("font-size", "10px")
         .attr("text-anchor", "middle")
         .attr("font-color", "white")
 
@@ -131,14 +132,14 @@ d3.csv("assets/data/data.csv").then(stateData => {
     var tooltip2 = d3.select("#circleCustomTooltip")
         .append("div")
         .style("position", "absolute")
-        .style("visibility", "hidden")
+        .style("visibility", "visible")
         .style("background-color", "white")
         .style("border", "solid")
         .style("border-width", "1px")
         .style("border-radius", "5px")
-        .style("padding", "10px")
+        .style("padding", "15px")
         .html(function (d) {
-            return (`${d.abbr}<br>poverty percentage: ${d.poverty}<br>healthcare ratio: ${d.healthcare}`);
+            return (`inner text: ${d.abbr}<br>poverty percentage: ${d.poverty}<br>healthcare ratio: ${d.healthcare}`);
         });
 
     // Step 7: Create tooltip in the chart
