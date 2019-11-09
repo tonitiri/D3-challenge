@@ -18,14 +18,14 @@ var height = svgHeight - margin.top - margin.bottom;
 // append an SVG group that will hold our chart,
 // and shift the latter by left and top margins.
 // =================================
-var svg = d3
-    .select("#scatter")
+var svg = d3.select("#scatter")
     .append("svg")
     .attr("width", svgWidth)
     .attr("height", svgHeight);
 
 var chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
 
 // Step 3:
 // Import data from the data.csv file
@@ -38,8 +38,8 @@ d3.csv("assets/data/data.csv").then(stateData => {
     stateData.forEach(data => {
         data.poverty = +data.poverty;
         data.healthcare = +data.healthcare;
-        data.abbr = +data.abbr;
-        data.state = +data.state;
+        data.abbr = data.abbr;
+        data.state = data.state;
     });
 
 
@@ -73,9 +73,21 @@ d3.csv("assets/data/data.csv").then(stateData => {
     chartGroup.append("g")
         .call(leftAxis);
 
+
+    // Create axes labels
     chartGroup.append("text")
-        .text("Healthcare Vs Poverty By States")
-        .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left + 7)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .attr("class", "axisText")
+        .text("Lacks healthcare(%)");
+
+    chartGroup.append("text")
+        .attr("transform", `translate(${width / 2}, ${height + margin.top + 28})`)
+        .attr("class", "axisText")
+        .text("In Poverty(%)");
+
 
 
 
@@ -85,60 +97,70 @@ d3.csv("assets/data/data.csv").then(stateData => {
         .data(stateData)
         .enter()
         .append("circle")
+        .attr("id", "circleCustomTooltip")
         .attr("cx", d => xLinearScale(d.poverty))
         .attr("cy", d => yLinearScale(d.healthcare))
         .attr("r", "10")
-        .attr("fill", "blue")
-        .attr("opacity", ".5");
-
+        .attr("fill", "black")
+        .attr("opacity", ".5")
+        .text(function (d) { return d.abbr; })
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "5px")
+        .attr("text-anchor", "middle")
+        .attr("font-color", "white")
 
 
     // Step 6: Initialize tool tip
     // ==============================
     // var toolTip = d3.tip()
-    //     .attr("class", "tooltip")
-    //     .offset([80, -60])
+    //     .attr("class", "d3-tip")
+    //     // .offset([80, -60])
     //     .html(function (d) {
     //         return (`${data.abbr}<br>poverty percentage: ${data.poverty}<br>healthcare ratio: ${data.healthcare}`);
     //     });
 
-    var toolTip = d3.select('body')
-        .append('div')
-        .attr("class", "tooltip")
-        .offset([80, -60])
+    // var toolTip = d3.selectAll('#circle')
+    //     .append('div')
+    //     .attr("class", "tooltip")
+    //     // .offset([80, -60])
+    //     .html(function (d) {
+    //         return (`${d.abbr}<br>poverty percentage: ${d.poverty}<br>healthcare ratio: ${d.healthcare}`);
+    //     });
+
+    // create a tooltip
+    var tooltip2 = d3.select("#circleCustomTooltip")
+        .append("div")
+        .style("position", "absolute")
+        .style("visibility", "hidden")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
         .html(function (d) {
-            return (`${data.abbr}<br>poverty percentage: ${data.poverty}<br>healthcare ratio: ${data.healthcare}`);
+            return (`${d.abbr}<br>poverty percentage: ${d.poverty}<br>healthcare ratio: ${d.healthcare}`);
         });
-
-
 
     // Step 7: Create tooltip in the chart
     // ==============================
-    chartGroup.call(toolTip);
+    d3.select("#circleCustomTooltip")
+        .on("mouseover", function () { return tooltip2.style("visibility", "visible"); })
+        .on("mousemove", function () { return tooltip2.style("top", (event.pageY - 2390) + "px").style("left", (event.pageX - 800) + "px"); })
+        .on("mouseout", function () { return tooltip2.style("visibility", "hidden"); });
 
-    // Step 8: Create event listeners to display and hide the tooltip
-    // ==============================
-    circlesGroup.on("click", function (data) {
-        toolTip.show(data, this);
-    })
-        // onmouseover event
-        .on("mouseover", function (data, index) {
-            toolTip.html(data);
-        });
 
-    // Create axes labels
-    chartGroup.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left + 40)
-        .attr("x", 0 - (height / 2))
-        .attr("dy", "1em")
-        .attr("class", "axisText")
-        .text("Lacks healthcare(%)");
+    // chartGroup.call(tooltip2);
 
-    chartGroup.append("text")
-        .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
-        .attr("class", "axisText")
-        .text("In Poverty(%)");
+    // // Step 8: Create event listeners to display and hide the tooltip
+    // // ==============================
+    // circlesGroup.on("click", function (data) {
+    //     tooltip2.show(data, this);
+    // })
+    //     // onmouseover event
+    //     .on("mouseover", function (data, index) {
+    //         tooltip2.html(data);
+    //     });
+
 }).catch(function (error) {
     console.log(error);
 });
