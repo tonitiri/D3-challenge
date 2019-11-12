@@ -101,14 +101,33 @@ d3.csv("assets/data/data.csv").then(stateData => {
         .attr("id", "circleCustomTooltip")
         .attr("cx", d => xLinearScale(d.poverty))
         .attr("cy", d => yLinearScale(d.healthcare))
-        .attr("r", "15")
+        .attr("r", "20")
         .attr("fill", "blue")
+        .style("fill", function (d) {
+            return d.abbr
+        })
         .attr("opacity", ".8")
-        .text(function (d) { return d.abbr; })
+
+
+    // .append("text")
+    // .text(function (d) { return d.abbr; })
+    // .attr("font-family", "sans-serif")
+    // .attr("font-size", "10px")
+    // .attr("text-anchor", "middle")
+    // .attr("font-color", "black");
+
+    var dotLabels = chartGroup.selectAll("text")
+        .data(stateData)
+        .enter()
+        .append("text")
+        .attr("id", "textplace")
+        .attr("x", d => xLinearScale(d.poverty))
+        .attr("y", d => yLinearScale(d.healthcare))
+        .text(function (d) { return d.abbr })
         .attr("font-family", "sans-serif")
         .attr("font-size", "10px")
         .attr("text-anchor", "middle")
-        .attr("font-color", "white")
+        .attr("fill", "white");
 
 
     // Step 6: Initialize tool tip
@@ -133,7 +152,7 @@ d3.csv("assets/data/data.csv").then(stateData => {
         .append("div")
         .style("position", "absolute")
         .style("visibility", "visible")
-        .style("background-color", "white")
+        .style("background-color", "black")
         .style("border", "solid")
         .style("border-width", "1px")
         .style("border-radius", "5px")
